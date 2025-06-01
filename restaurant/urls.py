@@ -11,8 +11,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('create-payment/', views.create_payment, name='create_payment'),
     path('webhook/stripe/', views.stripe_webhook, name='stripe_webhook'),
-    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('place_order/', views.place_order, name='place_order'),
-    # path('admin/orders/', views.admin_orders, name='admin_orders'),
-    # path('admin/menu/', views.admin_menu, name='admin_menu'),
 ] 

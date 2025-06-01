@@ -1,17 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Sum
-from .models import Category, MenuItem, Order, OrderItem
-from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from django.conf import settings
-from .payment import create_payment_intent, handle_webhook
 from django.views.decorators.csrf import csrf_exempt
 from decimal import Decimal
 
-def is_admin(user):
-    return user.is_authenticated and user.userprofile.is_admin
+from .models import Category, MenuItem, Order, OrderItem
+from .payment import create_payment_intent, handle_webhook
+
+# def is_admin(user):
+#     return user.is_authenticated and user.userprofile.is_admin
+
+def is_admin(request):
+    user = request
+    print(user)
+    if user.is_authenticated:
+        if user.userprofile.is_admin:
+            return redirect('admin_dashboard')  # or use reverse('admin_dashboard')
+        else:
+            return redirect('menu')  # or any normal user page
+    return redirect('login')  # fallback
+
 
 def home(request):
     categories = Category.objects.all()[:6]
@@ -151,6 +162,7 @@ def admin_dashboard(request):
         'total_sales': total_sales,
         'recent_orders': recent_orders,
     }
+    print("Admin Dashboard Context:", context)  # Debugging line
     return render(request, 'restaurant/admin_dashboard.html', context)
 
 @user_passes_test(is_admin)

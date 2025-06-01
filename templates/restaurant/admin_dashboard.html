@@ -31,32 +31,46 @@
 
     <h2 class="mt-4">Recent Orders</h2>
     <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Customer</th>
-            <th>Total Amount</th>
-            <th>Status</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for order in recent_orders %}
-          <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.customer_name }}</td>
-            <td>${{ order.total_amount }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ order.created_at }}</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="5" class="text-center">No recent orders found.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+     <table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Customer</th>
+      <th>Total Amount</th>
+      <th>Status</th>
+      <th>Change Status</th>  <!-- New column for updating -->
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in recent_orders %}
+    <tr>
+      <td>{{ order.id }}</td>
+      <td>{{ order.user }}</td>
+      <td>${{ order.total_amount }}</td>
+      <td>{{ order.status }}</td>
+
+      <td>
+        <form method="POST" action="{% url 'update_order_status' order.id %}">
+          {% csrf_token %}
+          <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+            {% for key, value in order.STATUS_CHOICES %}
+              <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </td>
+
+      <td>{{ order.created_at }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6" class="text-center">No recent orders found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
     </div>
   </div>
 

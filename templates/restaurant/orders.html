@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - SmartDine{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">My Orders</h1>
+
+    {% if orders %}
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Order #{{ order.id }}</h5>
+                    <span class="badge {% if order.status == 'pending' %}bg-warning
+                                     {% elif order.status == 'preparing' %}bg-info
+                                     {% elif order.status == 'ready' %}bg-success
+                                     {% elif order.status == 'completed' %}bg-secondary
+                                     {% else %}bg-danger{% endif %}">
+                        {{ order.status|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Order Items:</h6>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.orderitem_set.all %}
+                                        <tr>
+                                            <td>{{ item.menu_item.name }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>${{ item.price_at_time_of_order }}</td>
+                                            <td>${{ item.price_at_time_of_order }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Order Details</h6>
+                                    <p class="mb-1"><strong>Date:</strong> {{ order.created_at|date:"F j, Y, g:i a" }}</p>
+                                    <p class="mb-1"><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+                                    {% if order.special_instructions %}
+                                    <p class="mb-1"><strong>Special Instructions:</strong></p>
+                                    <p class="mb-0">{{ order.special_instructions }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center">
+        <h3>No orders yet</h3>
+        <p>Start ordering some delicious food!</p>
+        <a href="{% url 'menu' %}" class="btn btn-primary">Browse Menu</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

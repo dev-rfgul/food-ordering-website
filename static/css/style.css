@@ -1,0 +1,101 @@
+/* General Styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Menu Item Card */
+.menu-item-card {
+    transition: transform 0.2s;
+    height: 100%;
+}
+
+.menu-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.menu-item-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Order Status */
+.status-pending {
+    color: #ffc107;
+}
+
+.status-preparing {
+    color: #17a2b8;
+}
+
+.status-ready {
+    color: #28a745;
+}
+
+.status-completed {
+    color: #6c757d;
+}
+
+.status-cancelled {
+    color: #dc3545;
+}
+
+/* Auth Forms */
+.auth-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* Custom Button Styles */
+.btn-primary {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+}
+
+.btn-primary:hover {
+    background-color: #357abd;
+    border-color: #357abd;
+}
+
+/* Category Pills */
+.category-pill {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.category-pill:hover {
+    background-color: #4a90e2 !important;
+    color: white !important;
+}
+
+/* Cart Badge */
+.cart-badge {
+    position: relative;
+    top: -8px;
+    right: 5px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 50%;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1.75rem;
+    }
+    h3 {
+        font-size: 1.5rem;
+    }
+} 

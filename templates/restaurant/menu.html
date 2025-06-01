@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load restaurant_extras %}
+
+{% block title %}Menu - SmartDine{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Our Menu</h1>
+
+    <!-- Category Filter -->
+    <div class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'menu' %}" class="btn {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                All
+            </a>
+            {% for category in categories %}
+            <a href="{% url 'menu' %}?category={{ category.name }}" 
+               class="btn {% if selected_category == category.name %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Menu Items -->
+    <div class="row">
+        {% for item in menu_items %}
+        <div class="col-md-4 mb-4">
+            <div class="card menu-item-card">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top menu-item-image" alt="{{ item.name }}">
+                {% else %}
+                <img src="https://via.placeholder.com/300x200" class="card-img-top menu-item-image" alt="{{ item.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0">${{ item.price }}</span>
+                        {% if item.is_available %}
+                        <form method="post" action="{% url 'add_to_cart' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>Not Available</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No menu items found in this category.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Cart Preview -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="bg-white rounded-3 shadow p-3">
+        <h5>Cart Summary</h5>
+        {% with total_items=request.session.cart|dict_values_sum %}
+        <p>{{ total_items }} item{{ total_items|pluralize }}</p>
+        {% endwith %}
+        <a href="{% url 'cart' %}" class="btn btn-primary">View Cart</a>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to SmartDine{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row py-5">
+        <div class="col-md-6">
+            <h1 class="display-4">Welcome to SmartDine</h1>
+            <p class="lead">Your favorite restaurant management system that makes ordering food a breeze.</p>
+            <a href="{% url 'menu' %}" class="btn btn-primary btn-lg">View Menu</a>
+        </div>
+        <div class="col-md-6">
+            <img src="https://via.placeholder.com/600x400" alt="Restaurant" class="img-fluid rounded">
+        </div>
+    </div>
+
+    <!-- Featured Categories -->
+    <section class="my-5">
+        <h2 class="mb-4">Featured Categories</h2>
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if category.menu_items.first.image %}
+                    <img src="{{ category.menu_items.first.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="{{ category.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ category.name }}</h5>
+                        <p class="card-text">{{ category.description }}</p>
+                        <a href="{% url 'menu' %}?category={{ category.name }}" class="btn btn-outline-primary">Browse {{ category.name }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Featured Items -->
+    <section class="my-5">
+        <h2 class="mb-4">Featured Items</h2>
+        <div class="row">
+            {% for item in featured_items %}
+            <div class="col-md-4 mb-4">
+                <div class="card menu-item-card">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" class="card-img-top menu-item-image" alt="{{ item.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x200" class="card-img-top menu-item-image" alt="{{ item.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0">${{ item.price }}</span>
+                            <form method="post" action="{% url 'add_to_cart' item.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %} 

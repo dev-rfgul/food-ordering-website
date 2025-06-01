@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load restaurant_extras %}
+
+{% block title %}Shopping Cart - SmartDine{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Shopping Cart</h1>
+
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Cart Items -->
+            {% for item in cart_items %}
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if item.menu_item.image %}
+                        <img src="{{ item.menu_item.image.url }}" class="img-fluid rounded-start" alt="{{ item.menu_item.name }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200" class="img-fluid rounded-start" alt="{{ item.menu_item.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.menu_item.name }}</h5>
+                            <p class="card-text">{{ item.menu_item.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="mb-0">Quantity: {{ item.quantity }}</p>
+                                    <p class="mb-0">Price: ${{ item.menu_item.price }}</p>
+                                    <p class="h5 mb-0">Subtotal: ${{ item.menu_item.price|multiply:item.quantity }}</p>
+                                </div>
+                                <form method="post" action="{% url 'remove_from_cart' item.menu_item.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4">
+            <!-- Order Summary -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Summary</h5>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total Items:</span>
+                        <span>{{ cart_items|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="h5">Total Amount:</span>
+                        <span class="h5">${{ total }}</span>
+                    </div>
+                    <form method="post" action="{% url 'place_order' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">Place Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center">
+        <h3>Your cart is empty</h3>
+        <p>Add some delicious items from our menu!</p>
+        <a href="{% url 'menu' %}" class="btn btn-primary">Browse Menu</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

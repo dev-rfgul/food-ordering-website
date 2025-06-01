@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Sign In" %} - SmartDine{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title text-center mb-4">{% trans "Sign In" %}</h1>
+
+          {% get_providers as socialaccount_providers %}
+          
+          {% if socialaccount_providers %}
+          <div class="text-center mb-4">
+            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark btn-lg w-100">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" height="20" class="me-2">
+              Sign in with Google
+            </a>
+          </div>
+          <div class="text-center mb-4">
+            <span class="text-muted">or</span>
+          </div>
+          {% endif %}
+
+          <form class="login" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <p class="mb-0">
+              <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+            </p>
+            <p class="mt-2">
+              Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

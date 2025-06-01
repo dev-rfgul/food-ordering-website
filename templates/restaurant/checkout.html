@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block title %}Checkout - SmartDine{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Checkout</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Order Summary -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Order Summary</h5>
+                    {% for item in cart_items %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0">{{ item.menu_item.name }}</h6>
+                            <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                        </div>
+                        <span>${{ item.subtotal }}</span>
+                    </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <h5>Total</h5>
+                        <h5>${{ total }}</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Payment Details</h5>
+                    <form id="payment-form">
+                        <div class="mb-3">
+                            <label for="card-element" class="form-label">Credit or debit card</label>
+                            <div id="card-element" class="form-control"></div>
+                            <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submit-button">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Pay ${{ total }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Delivery Information -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Delivery Information</h5>
+                    <p class="mb-1"><strong>Name:</strong> {{ request.user.get_full_name }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ request.user.email }}</p>
+                    <p class="mb-0"><strong>Phone:</strong> {{ request.user.userprofile.phone_number }}</p>
+                    <hr>
+                    <p class="mb-0"><strong>Delivery Address:</strong><br>
+                        {{ request.user.userprofile.address }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Create a Stripe client
+    const stripe = Stripe('{{ stripe_publishable_key }}');
+    const elements = stripe.elements();
+
+    // Create an instance of the card Element
+    const card = elements.create('card');
+    card.mount('#card-element');
+
+    // Handle form submission
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('submit-button');
+    const spinner = submitButton.querySelector('.spinner-border');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        submitButton.disabled = true;
+        spinner.classList.remove('d-none');
+
+        try {
+            // Create payment intent
+            const response = await fetch('{% url "create_payment" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // Confirm payment
+            const result = await stripe.confirmCardPayment(data.client_secret, {
+                payment_method: {
+                    card: card,
+                    billing_details: {
+                        email: '{{ request.user.email }}'
+                    }
+                }
+            });
+
+            if (result.error) {
+                throw new Error(result.error.message);
+            }
+
+            // Payment successful
+            window.location.href = '{% url "order_confirmation" %}';
+
+        } catch (error) {
+            const errorElement = document.getElementById('card-errors');
+            errorElement.textContent = error.message;
+            submitButton.disabled = false;
+            spinner.classList.add('d-none');
+        }
+    });
+</script>
+{% endblock %} 

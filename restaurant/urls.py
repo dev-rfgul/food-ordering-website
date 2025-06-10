@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 
 urlpatterns = [
@@ -14,4 +14,5 @@ urlpatterns = [
     path('webhook/stripe/', views.stripe_webhook, name='stripe_webhook'),
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('place_order/', views.place_order, name='place_order'),
+    path('accounts/',include("allauth.urls"))
 ] 

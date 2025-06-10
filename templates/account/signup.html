@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load socialaccount %}
 {% load i18n %}
 {% load crispy_forms_tags %}
 
@@ -29,6 +30,9 @@
               {% trans "Already have an account?" %}
               <a href="{% url 'account_login' %}" class="text-primary">{% trans "Sign In" %}</a>
             </p>
+             <a href="{% provider_login_url 'google' %}" class="btn btn-outline-primary w-100">
+          Signup with Google
+        </a>
           </div>
         </div>
       </div>

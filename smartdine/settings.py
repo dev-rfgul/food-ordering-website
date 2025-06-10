@@ -173,8 +173,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            
-            
+         
         },
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
